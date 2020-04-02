@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Second-Hand-Market-Application</string>
+    <string name="change_picture">change_picture</string>
+    <string name="profilepictureContentDescrition">profilepictureContentDescrition</string>
+    <string name="fullName">FullName</string>
+    <string name="nickName">NickName</string>
+    <string name="email">Email</string>
+    <string name="location">Location</string>
+    <string name="edit">Edit</string>
+</resources>
