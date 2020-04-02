@@ -1,5 +1,6 @@
 package com.example.second_hand_market_application
 
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
@@ -16,6 +17,20 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
+        if (savedInstanceState != null) {
+            fullName.text = savedInstanceState.get("fullName").toString()
+            nickname.text = savedInstanceState.get("nickName").toString()
+            location.text = savedInstanceState.get("location").toString()
+            email.text = savedInstanceState.get("email").toString()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("fullName", fullName.text.toString())
+        outState.putString("nickName", nickname.text.toString())
+        outState.putString("email", email.text.toString())
+        outState.putString("location", location.text.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -55,6 +70,20 @@ class ShowProfileActivity : AppCompatActivity() {
         detailIntent.putExtra("imageURI", imgURI)
 
         startActivityForResult(detailIntent, EDIT_PROFILE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == EDIT_PROFILE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                fullName.text = data.extras?.get("fullName").toString()
+                nickname.text = data.extras?.get("nickName").toString()
+                location.text = data.extras?.get("location").toString()
+                email.text = data.extras?.get("email").toString()
+                //TODO there is a bug in this code as the imageURI Received is null
+                profileImage.setImageURI(Uri.parse(intent.extras?.get("imageURI").toString()))
+            }
+        }
     }
 
 }
