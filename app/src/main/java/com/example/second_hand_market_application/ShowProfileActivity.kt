@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.activity_show_profile.*
 
@@ -20,7 +21,6 @@ class ShowProfileActivity : AppCompatActivity() {
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
         fullName.text = savedInstanceState.get("fullName").toString()
         nickname.text = savedInstanceState.get("nickName").toString()
         location.text = savedInstanceState.get("location").toString()
@@ -59,12 +59,10 @@ class ShowProfileActivity : AppCompatActivity() {
         detailIntent.putExtra("email", email.text.toString())
         val imgURI: String = if (profileImage.tag == "default") {
             Uri.parse(
-                ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(
-                    R.drawable.profile_pic
-                ) + '/' + resources.getResourceTypeName(R.drawable.profile_pic) + '/' + resources.getResourceEntryName(
-                    R.drawable.profile_pic
-                )
-            ).toString()
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" + resources.getResourcePackageName(R.drawable.profile_pic) +
+                        '/' + resources.getResourceTypeName(R.drawable.profile_pic) +
+                        '/' + resources.getResourceEntryName(R.drawable.profile_pic)).toString()
         } else {
             profileImage.tag.toString()
         }
@@ -81,8 +79,8 @@ class ShowProfileActivity : AppCompatActivity() {
                 nickname.text = data.extras?.get("nickName").toString()
                 location.text = data.extras?.get("location").toString()
                 email.text = data.extras?.get("email").toString()
-                //TODO there is a bug in this code as the imageURI Received is null
-                profileImage.setImageURI(Uri.parse(intent.extras?.get("imageURI").toString()))
+                profileImage.setImageURI(Uri.parse(data.extras?.get("imageURI").toString()))
+                profileImage.tag = Uri.parse(data.extras?.get("imageURI").toString())
             }
         }
     }
