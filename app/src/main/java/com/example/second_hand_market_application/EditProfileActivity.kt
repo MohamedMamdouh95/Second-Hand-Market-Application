@@ -59,15 +59,9 @@ class EditProfileActivity : AppCompatActivity() {
             Editable.Factory.getInstance().newEditable(intent.extras?.get("location").toString())
         email.text =
             Editable.Factory.getInstance().newEditable(intent.extras?.get("email").toString())
-        //Set hints
-        fullName.hint = intent.extras?.get("fullName").toString()
-        nickname.hint = intent.extras?.get("nickName").toString()
-        location.hint = intent.extras?.get("location").toString()
-        email.hint = intent.extras?.get("email").toString()
-
         //Set the image as the current image of the user
         defaultUri = Uri.parse(intent.extras?.get("imageURI").toString())
-        Log.d("TEST",defaultUri.toString())
+        Log.d("TEST", defaultUri.toString())
         profileImage.setImageURI(defaultUri)
     }
 
@@ -182,7 +176,7 @@ class EditProfileActivity : AppCompatActivity() {
         intent.putExtra("nickName", nickname.text.toString())
         intent.putExtra("location", location.text.toString())
         intent.putExtra("email", email.text.toString())
-        intent.putExtra("imageURI", profilePictureUri?:defaultUri)
+        intent.putExtra("imageURI", profilePictureUri ?: defaultUri)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
