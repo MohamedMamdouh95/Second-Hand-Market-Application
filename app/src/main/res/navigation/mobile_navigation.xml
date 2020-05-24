@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_on_sale_items">
+
+    <fragment
+        android:id="@+id/nav_item_details"
+        android:name="com.example.lab2.ItemDetailsFragment"
+        android:label="" >
+        <action
+            android:id="@+id/action_itemDetailsFragment_to_itemEditFragment2"
+            app:destination="@id/nav_item_edit" />
+        <action
+            android:id="@+id/action_nav_item_details_to_nav_item_list"
+            app:destination="@id/nav_own_items" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_item_edit"
+        android:name="com.example.lab2.ItemEditFragment"
+        android:label="" >
+        <action
+            android:id="@+id/action_itemEditFragment_to_itemDetailsFragment"
+            app:destination="@id/nav_item_details" />
+        <action
+            android:id="@+id/action_nav_item_edit_to_nav_on_sale_items"
+            app:destination="@id/nav_on_sale_items" />
+        <action
+            android:id="@+id/action_nav_item_edit_to_nav_item_details"
+            app:destination="@id/nav_item_details" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.lab2.ShowProfileFragment"
+        android:label="@string/nav_menu_profile">
+        <action
+            android:id="@+id/action_showProfileFragment_to_editProfileFragment"
+            app:destination="@id/nav_edit_profile" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_on_sale_items2"
+            app:destination="@id/nav_on_sale_items" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_own_items"
+        android:name="com.example.lab2.OwnItemsListFragment"
+        android:label="@string/nav_menu_own_items_list">
+        <action
+            android:id="@+id/action_itemListFragment_to_itemDetailsFragment"
+            app:destination="@id/nav_item_details"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_itemListFragment_to_itemEditFragment"
+            app:destination="@id/nav_item_edit" />
+        <action
+            android:id="@+id/action_nav_own_items_to_nav_on_sale_items2"
+            app:destination="@id/nav_on_sale_items" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_edit_profile"
+        android:name="com.example.lab2.EditProfileFragment"
+        android:label="" >
+        <action
+            android:id="@+id/action_nav_edit_profile_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
+        <action
+            android:id="@+id/action_itemEditFragment_to_itemListFragment"
+            app:destination="@id/nav_own_items" />
+    <fragment
+        android:id="@+id/nav_on_sale_items"
+        android:name="com.example.lab2.OnSaleListFragment"
+        android:label="@string/nav_menu_on_sale_items_list" />
+
+    <fragment
+        android:id="@+id/nav_wishlist"
+        android:name="com.example.lab2.WishlistFragment"
+        android:label="Wishlist" />
+</navigation>

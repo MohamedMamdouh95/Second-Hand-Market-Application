@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/searchDialogPriceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/price_hint"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchDialogLocationEditText"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/location"
+        app:boxStrokeColor="#03A9F4"
+        app:layout_constraintTop_toBottomOf="@+id/textMax"
+        tools:layout_editor_absoluteX="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchDialogCategory"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="59dp"
+        android:hint="@string/category_hint"
+        app:boxStrokeColor="#03A9F4"
+        app:layout_constraintEnd_toEndOf="@+id/searchDialogLocationEditText"
+        app:layout_constraintStart_toStartOf="@+id/searchDialogLocationEditText"
+        app:layout_constraintTop_toBottomOf="@+id/searchDialogLocationEditText">
+
+        <AutoCompleteTextView
+            android:id="@+id/itemEditCategoryAutoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+        android:id="@+id/searchDialogSeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:bar_color="#D0D1D8"
+        app:bar_highlight_color="#03A9F4"
+        app:corner_radius="10"
+        app:data_type="_integer"
+        app:gap="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/searchDialogPriceText"
+        app:layout_constraintTop_toBottomOf="@+id/searchDialogPriceText"
+        app:left_thumb_color="#4590CA"
+        app:left_thumb_color_pressed="#0C4C85"
+        app:max_value="10000"
+        app:min_value="0"
+        app:right_thumb_color="#4590CA"
+        app:right_thumb_color_pressed="#0C4C85"
+        app:steps="10" />
+
+    <TextView
+        android:id="@+id/textMin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        app:layout_constraintStart_toStartOf="@+id/searchDialogSeekBar"
+        app:layout_constraintTop_toBottomOf="@+id/searchDialogSeekBar" />
+
+    <TextView
+        android:id="@+id/textMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="10000"
+        app:layout_constraintBottom_toBottomOf="@+id/textMin"
+        app:layout_constraintEnd_toEndOf="@+id/searchDialogSeekBar"
+        app:layout_constraintTop_toBottomOf="@+id/searchDialogSeekBar" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

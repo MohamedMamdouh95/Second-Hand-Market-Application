@@ -1,10 +1,122 @@
 <resources>
-    <string name="app_name">Second-Hand-Market-Application</string>
-    <string name="change_picture">change_picture</string>
-    <string name="profilepictureContentDescrition">profilepictureContentDescrition</string>
-    <string name="fullName">FullName</string>
-    <string name="nickName">NickName</string>
-    <string name="email">Email</string>
+    <string name="app_name">lab2</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="nav_menu_own_items_list">Your items</string>
+    <string name="nav_menu_profile">Profile</string>
+
+    <string name="home_second">Home Second</string>
+    <string name="secondary_text" />
+    <string name="title" />
+    <string name="content_description_media" />
+    <string name="no_data_available">No items available</string>
+
+    <string name="fullName">Full Name</string>
+    <string name="nickname">Nickname</string>
+    <string name="email">Email Address</string>
     <string name="location">Location</string>
+    <string name="fullNameHint">Enter Full Name</string>
+    <string name="nicknameHint">Enter Nickname</string>
+    <string name="emailHint">Enter Email Address</string>
+    <string name="locationHint">Enter Location</string>
+    <string name="profilepictureContentDescrition">Profile picture</string>
+
     <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="expires_label">Expires on</string>
+    <string name="details_category_label">Category</string>
+    <string name="details_location_label">Location</string>
+    <string name="title_hint">Title</string>
+    <string name="category_hint">Category</string>
+    <string name="sub_category_hint">Subcategory</string>
+    <string name="expiry_date_hint">Expirary Date</string>
+    <string name="description_hint">Description</string>
+    <string name="location_hint">Location</string>
+    <string name="price_hint">Price</string>
+    <string name="search_hint">Search</string>
+    <string name="search_title">Search</string>
+    <string name="nav_menu_on_sale_items_list">Items on sale</string>
+    <string name="wishlist">WishList</string>
+    <string name="search">Search</string>
+    <string name="cancel">Cancel</string>
+    <string-array name="Categories">
+        <item></item>
+        <item>Arts &amp; Crafts</item>
+        <item>Sports &amp; Hobby</item>
+        <item>Baby</item>
+        <item>Women\'s fashion</item>
+        <item>Men\'s fashion</item>
+        <item>Electronics</item>
+        <item>Games &amp; Videogames</item>
+        <item>Automotive</item>
+    </string-array>
+    <string-array name="C1">
+        <item>Painting, Drawing &amp; Art Supplies</item>
+        <item>Sewing</item>
+        <item>Scrapbooking &amp; Stamping</item>
+        <item>Party Decoration &amp; Supplies</item>
+    </string-array>
+    <string-array name="C2">
+        <item>Sports &amp; Outdoors</item>
+        <item>Outdoor Recreation</item>
+        <item>Sports &amp; Fitness</item>
+        <item>Pet Supplies</item>
+    </string-array>
+    <string-array name="C3">
+        <item>Apparel &amp; Accessories</item>
+        <item>Baby &amp; Toddler Toys</item>
+        <item>Car Seats &amp; Accessories</item>
+        <item>Pregnancy &amp; Maternity</item>
+        <item>Strollers &amp; Accessories</item>
+    </string-array>
+    <string-array name="C4">
+        <item>Clothing</item>
+        <item>Shoes</item>
+        <item>Watches</item>
+        <item>Handbags</item>
+        <item>Accessories</item>
+    </string-array>
+    <string-array name="C5">
+        <item>Clothing</item>
+        <item>Shoes</item>
+        <item>Watches</item>
+        <item>Accessories</item>
+    </string-array>
+    <string-array name="C6">
+        <item>Computers</item>
+        <item>Monitors</item>
+        <item>Printers &amp; Scanners </item>
+        <item>Camera &amp; Photo</item>
+        <item>Smartphone &amp; Tablet</item>
+        <item>Audio</item>
+        <item>Television &amp; Video</item>
+        <item>Videogame Consoles</item>
+        <item>Wearable Technology</item>
+        <item>Accessories &amp; Supplies</item>
+        <item>Irons &amp; Steamers</item>
+        <item>Vacuums &amp; Floor Care</item>
+    </string-array>
+    <string-array name="C7">
+        <item>Action Figures &amp; Statues</item>
+        <item>Arts &amp; Crafts</item>
+        <item>Building Toys </item>
+        <item>Dolls &amp; Accessories</item>
+        <item>Kids\' Electronics</item>
+        <item>Learning &amp; Education </item>
+        <item>Tricycles, Scooters &amp; Wagons</item>
+        <item>Videogames</item>
+    </string-array>
+    <string-array name="C8">
+        <item>Car Electronics &amp; Accessories</item>
+        <item>Accessories</item>
+        <item>Motorcycle &amp; Powersports</item>
+        <item>Replacement Parts</item>
+        <item>RV Parts &amp; Accessories </item>
+        <item>Tools &amp; Equipment </item>
+    </string-array>
 </resources>
