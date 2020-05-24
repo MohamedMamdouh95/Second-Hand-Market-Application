@@ -72,7 +72,11 @@
     <fragment
         android:id="@+id/nav_on_sale_items"
         android:name="com.example.lab2.OnSaleListFragment"
-        android:label="@string/nav_menu_on_sale_items_list" />
+        android:label="@string/nav_menu_on_sale_items_list" >
+        <action
+            android:id="@+id/action_nav_on_sale_items_self"
+            app:destination="@id/nav_on_sale_items" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_wishlist"

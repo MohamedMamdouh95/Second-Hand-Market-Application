@@ -60,7 +60,7 @@ class ItemEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_item_edit_to_nav_item_details)
+            findNavController().navigate(R.id.action_nav_item_edit_to_nav_on_sale_items)
         }
         val imgButton: ImageButton? = view.rootView.findViewById(R.id.editImageButton)
         //Using toolbar for image and editing when in portrait
@@ -76,18 +76,30 @@ class ItemEditFragment : Fragment() {
             itemEditTitle.editText?.setText(item.title)
             itemEditPrice.editText?.setText(item.price)
             itemEditDescription.editText?.setText(item.description)
-            itemEditCategory.editText?.setText(item.category)
-            itemEditSubCategory.editText?.setText(item.subcategory)
+            (itemEditCategory.editText as? AutoCompleteTextView)?.setText(item.category,false)
+            (itemEditSubCategory.editText as? AutoCompleteTextView)?.setText(item.subcategory,false)
             itemEditExpiryDate.editText?.setText(item.expiryDate)
             itemEditLocation.editText?.setText(item.location)
             vm.setImageStoragePath(item.image)
         })
 
         vm.bitmap.observe(viewLifecycleOwner, Observer { bitmap ->
-            itemEditImageLandscape?.setImageBitmap(bitmap)
-            val imageViewCollapsing: ImageView? =
-                view.rootView?.findViewById(R.id.imageViewCollapsing)
-            imageViewCollapsing?.setImageBitmap(bitmap)
+            if (vm.newImageBitmap.value == null) {
+                itemEditImageLandscape?.setImageBitmap(bitmap)
+                val imageViewCollapsing: ImageView? =
+                    view.rootView?.findViewById(R.id.imageViewCollapsing)
+                imageViewCollapsing?.setImageBitmap(bitmap)
+            }
+        })
+
+        vm.newImageBitmap.observe(viewLifecycleOwner, Observer { bitmap ->
+            bitmap?.let {
+                itemEditImageLandscape?.setImageBitmap(bitmap)
+                val imageViewCollapsing: ImageView? =
+                    view.rootView?.findViewById(R.id.imageViewCollapsing)
+                imageViewCollapsing?.setImageBitmap(bitmap)
+            }
+
         })
 
         val categories = resources.getStringArray(R.array.Categories)
@@ -166,23 +178,32 @@ class ItemEditFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.nav_item_details) {
-            val firebaseWriteResultLiveData = vm.detailItem.value?.documentId?.let {
-                vm.updateItem(createItemData(), vm.newImageBitmap.value)
-            } ?: vm.createItem(createItemData(), vm.newImageBitmap.value)
-
-            firebaseWriteResultLiveData.observe(viewLifecycleOwner, Observer {
-                Toast.makeText(requireContext(), it.statusString, Toast.LENGTH_SHORT).show()
-                if (it.hasFailed) {
-                    findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
-                } else if (it.documentId != null) {
-                    vm.setItemId(it.documentId)
-                    findNavController().navigate(R.id.action_itemEditFragment_to_itemDetailsFragment)
-                }
-            })
+        if (itemEditCategory.editText?.text.isNullOrEmpty()) {
+            itemEditCategory.error = "Category is required"
+        } else if (itemEditTitle.editText?.text.isNullOrEmpty()) {
+            itemEditTitle.error = "Title is required"
+        } else if (itemEditPrice.editText?.text.isNullOrEmpty()) {
+            itemEditPrice.error = "Price is required"
         } else {
-            super.onOptionsItemSelected(item)
+            if (item.itemId == R.id.nav_item_details) {
+                val firebaseWriteResultLiveData = vm.detailItem.value?.documentId?.let {
+                    vm.updateItem(createItemData(), vm.newImageBitmap.value)
+                } ?: vm.createItem(createItemData(), vm.newImageBitmap.value)
+
+                firebaseWriteResultLiveData.observe(viewLifecycleOwner, Observer {
+                    Toast.makeText(requireContext(), it.statusString, Toast.LENGTH_SHORT).show()
+                    if (it.hasFailed) {
+                        findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
+                    } else if (it.documentId != null) {
+                        vm.setItemId(it.documentId)
+                        findNavController().navigate(R.id.action_itemEditFragment_to_itemDetailsFragment)
+                    }
+                })
+            } else {
+                super.onOptionsItemSelected(item)
+            }
         }
+
         return true
     }
 
