@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_nav_show_buyer_profile"
             app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_nav_item_details_to_nav_on_sale_items"
+            app:destination="@id/nav_on_sale_items" />
     </fragment>
     <fragment
         android:id="@+id/nav_item_edit"
@@ -85,4 +88,12 @@
         android:id="@+id/nav_wishlist"
         android:name="com.example.lab2.WishlistFragment"
         android:label="Wishlist" />
+    <fragment
+        android:id="@+id/itemInfoFragment"
+        android:name="com.example.lab2.ItemInfoFragment"
+        android:label="ItemInfoFragment" />
+    <fragment
+        android:id="@+id/interestedBuyersFragment"
+        android:name="com.example.lab2.InterestedBuyersFragment"
+        android:label="InterestedBuyersFragment" />
 </navigation>

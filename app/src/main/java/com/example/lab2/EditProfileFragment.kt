@@ -26,7 +26,7 @@ import com.example.lab2.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.edit_profile_fragment.*
 
-class EditProfileFragment: Fragment() {
+class EditProfileFragment : Fragment() {
 
     private val v_model: UserViewModel by activityViewModels()
     private val user_id = FirebaseAuth.getInstance().currentUser!!.uid
@@ -55,9 +55,12 @@ class EditProfileFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_edit_profile_to_nav_profile)
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.nav_edit_profile) {
+                navController.navigate(R.id.action_nav_edit_profile_to_nav_profile)
+            }
         }
-        v_model.getUser(user_id)?.observe(viewLifecycleOwner, Observer{it->
+        v_model.getUser(user_id)?.observe(viewLifecycleOwner, Observer { it ->
             editProfileFullName.text = Editable.Factory.getInstance()
                 .newEditable(it.fullname)
             editProfileNickname.text = Editable.Factory.getInstance()
@@ -78,36 +81,39 @@ class EditProfileFragment: Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.profile_menu_save,menu)
+        inflater.inflate(R.menu.profile_menu_save, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.nav_profile) {
-        val firebaseWriteResultLiveData = v_model.detailUser.value?.documentId?.let {
-            v_model.updateUser(fillProfile(), v_model.newImageBitmap.value)
-        } ?: v_model.createUser(fillProfile(), v_model.newImageBitmap.value)
+        if (item.itemId == R.id.nav_profile) {
+            val firebaseWriteResultLiveData = v_model.detailUser.value?.documentId?.let {
+                v_model.updateUser(fillProfile(), v_model.newImageBitmap.value)
+            } ?: v_model.createUser(fillProfile(), v_model.newImageBitmap.value)
 
-        firebaseWriteResultLiveData.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(requireContext(), it.statusString, Toast.LENGTH_SHORT).show()
-            if(it.hasFailed) {
-                //findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
-            } else if( it.documentId!= null ) {
-                v_model.setUserId(it.documentId)
-                findNavController().navigate(R.id.action_nav_edit_profile_to_nav_profile)
-            }
-        })
-    } else {
-        super.onOptionsItemSelected(item)
-    }
-    return true
+            firebaseWriteResultLiveData.observe(viewLifecycleOwner, Observer {
+                Toast.makeText(requireContext(), it.statusString, Toast.LENGTH_SHORT).show()
+                if (it.hasFailed) {
+                    //findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
+                } else if (it.documentId != null) {
+                    v_model.setUserId(it.documentId)
+                    val navController = findNavController()
+                    if (navController.currentDestination?.id == R.id.nav_edit_profile) {
+                        navController.navigate(R.id.action_nav_edit_profile_to_nav_profile)
+                    }
+                }
+            })
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+        return true
     }
 
-    private fun fillProfile(): Profile{
+    private fun fillProfile(): Profile {
         val backInfo = Profile(
-            if(editProfileFullName.text.toString() == "") "Full Name" else editProfileFullName.text.toString(),
-            if(editProfileNickname.text.toString() == "") "Nickname" else editProfileNickname.text.toString(),
-            if(editProfileEmail.text.toString() == "") "Email" else editProfileEmail.text.toString(),
-            if(editProfileLocation.text.toString() == "") "Location" else editProfileLocation.text.toString(),
+            if (editProfileFullName.text.toString() == "") "Full Name" else editProfileFullName.text.toString(),
+            if (editProfileNickname.text.toString() == "") "Nickname" else editProfileNickname.text.toString(),
+            if (editProfileEmail.text.toString() == "") "Email" else editProfileEmail.text.toString(),
+            if (editProfileLocation.text.toString() == "") "Location" else editProfileLocation.text.toString(),
             v_model.detailUser.value!!.image,
             v_model.detailUser.value!!.documentId,
             v_model.detailUser.value!!.wishlist
@@ -115,7 +121,11 @@ class EditProfileFragment: Fragment() {
         return backInfo
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
         super.onCreateContextMenu(menu, v, menuInfo)
         menu.setHeaderTitle("Change Profile Picture")
         menu.add(0, v.id, 0, CAMERA_OPTION)
@@ -124,12 +134,12 @@ class EditProfileFragment: Fragment() {
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         when (item.title) {
-            CAMERA_OPTION -> if (askForPermissions (
+            CAMERA_OPTION -> if (askForPermissions(
                     Manifest.permission.CAMERA,
                     PERMISSION_REQUEST_CAMERA
-                    )
+                )
             ) takePhoto()
-            GALLERY_OPTION -> if (askForPermissions (
+            GALLERY_OPTION -> if (askForPermissions(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     PERMISSION_REQUEST_STORAGE
                 )
@@ -221,12 +231,13 @@ class EditProfileFragment: Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         var bitmap: Bitmap? = null
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_SELECT_IMAGE_IN_ALBUM) {
-            val galleryUri= data?.data
+            val galleryUri = data?.data
             bitmap = galleryUri?.let {
-                if(Build.VERSION.SDK_INT < 28) {
+                if (Build.VERSION.SDK_INT < 28) {
                     MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, it)
                 } else {
-                    val source = ImageDecoder.createSource(requireActivity().contentResolver, galleryUri)
+                    val source =
+                        ImageDecoder.createSource(requireActivity().contentResolver, galleryUri)
                     ImageDecoder.decodeBitmap(source)
                 }
             }

@@ -43,7 +43,10 @@ class InterestedBuyersAdapter(
 
         holder.name.setOnClickListener {
             userVm.setUserId(cardItemData.documentId)
-            userVm.setImageStoragePath(cardItemData.image)
+            userVm.setImageStoragePath(cardItemData.image)/*
+            if (it.findNavController().currentDestination?.id == R.id.nav_edit_profile) {
+                it.findNavController().navigate(R.id.action_nav_show_buyer_profile)
+            }*/
             it.findNavController().navigate(R.id.action_nav_show_buyer_profile)
         }
 

@@ -101,7 +101,10 @@ class ItemDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_item_edit_to_nav_on_sale_items)
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.nav_item_details) {
+                navController.navigate(R.id.action_nav_item_details_to_nav_on_sale_items)
+            }
         }
 
 
@@ -128,16 +131,16 @@ class ItemDetailsFragment : Fragment() {
         //Handling wishlist button clicks for portrait layout
         wishFAB?.setOnClickListener {
             itemVm.detailItem.value?.documentId?.let {
-            if(itemOnWishList) {
-                wishFAB?.setImageResource(R.drawable.favorite_border_white_24dp)
-                itemOnWishList = false
-                userVm.removeItemFromWishlist(it)
+                if (itemOnWishList) {
+                    wishFAB?.setImageResource(R.drawable.favorite_border_white_24dp)
+                    itemOnWishList = false
+                    userVm.removeItemFromWishlist(it)
 
-            } else {
-                wishFAB?.setImageResource(R.drawable.favorite_white_24dp)
-                itemOnWishList = true
-                userVm.addItemToWishlist(it)
-            }
+                } else {
+                    wishFAB?.setImageResource(R.drawable.favorite_white_24dp)
+                    itemOnWishList = true
+                    userVm.addItemToWishlist(it)
+                }
 
             }
         }
@@ -163,9 +166,9 @@ class ItemDetailsFragment : Fragment() {
         viewPager.isUserInputEnabled = false
         viewPager.adapter = itemDetailsPagerAdapter(this)
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            when(position) {
+            when (position) {
                 0 -> tab.text = "Info"
-                1 -> tab.text =  "Interested buyers"
+                1 -> tab.text = "Interested buyers"
             }
         }.attach()
 
@@ -176,7 +179,7 @@ class ItemDetailsFragment : Fragment() {
 
         override fun createFragment(position: Int): Fragment {
 
-            val frag = when(position) {
+            val frag = when (position) {
                 1 -> InterestedBuyersFragment()
                 else -> ItemInfoFragment()
             }
@@ -184,7 +187,6 @@ class ItemDetailsFragment : Fragment() {
             return frag
         }
     }
-
 
 
 }

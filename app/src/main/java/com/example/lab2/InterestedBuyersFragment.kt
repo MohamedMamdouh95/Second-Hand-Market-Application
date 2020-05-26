@@ -32,7 +32,10 @@ class InterestedBuyersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_own_items_to_nav_on_sale_items2)
+/*            if(findNavController().currentDestination?.id == R.id.nav_own_items){
+                //TODO This navigation is wrong
+                findNavController().navigate(R.id.action_nav_own_items_to_nav_on_sale_items2)
+            }*/
         }
         itemVm.interestedBuyers.observe(viewLifecycleOwner, Observer { buyers ->
             buyersRecycler.adapter = InterestedBuyersAdapter(
