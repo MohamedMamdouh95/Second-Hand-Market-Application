@@ -74,15 +74,18 @@ class ItemListViewAdapter(
 
         fun bind(cardDetails: CardData) {
             title.text = cardDetails.title
-            //TODO: price should never be "" and € should be added as a label in the layout
-            if (cardDetails.price == "")
-                cardDetails.price = "0"
-            price.text = cardDetails.price + " €"
+
             cardDetails.image?.let {
                 listVm.getItemImageAsBitmap(it).observe(lifeCycleOwner, Observer { bitmap ->
                     image.setImageBitmap(bitmap)
                 })
+
+                //TODO: price should never be "" and € should be added as a label in the layout
+                if (cardDetails.price == "")
+                    cardDetails.price = "0"
+                price.text = cardDetails.price + " €"
             }
+
         }
     }
 

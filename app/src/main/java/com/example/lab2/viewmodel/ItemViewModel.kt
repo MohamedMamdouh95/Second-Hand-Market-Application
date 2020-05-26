@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.example.lab2.model.Item
+import com.example.lab2.model.Profile
 import com.example.lab2.model.repository.DocumentWriteResult
 import com.example.lab2.model.repository.ItemRepository
 
@@ -17,6 +18,9 @@ class ItemViewModel : ViewModel() {
 
     val detailItem: LiveData<Item> = Transformations.switchMap(itemIdLiveData) { itemId ->
         repository.getItem(itemId)
+    }
+    val interestedBuyers: LiveData<List<Profile>> = Transformations.switchMap(itemIdLiveData) { itemId ->
+        repository.getItemBuyers(itemId)
     }
 
     private val imageStoragePathLiveData = MutableLiveData<String?>()

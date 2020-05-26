@@ -79,7 +79,7 @@ class OnSaleListFragment : Fragment(),MyContract {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
         }
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         val userId = user?.uid

@@ -117,10 +117,12 @@ class UserRepository {
 
     fun addItemToWishlist(itemId: String) {
         usersRef.document(Firebase.auth.currentUser!!.uid).update("wishlist", FieldValue.arrayUnion(itemId))
+        db.collection(ITEMS_COLLECTION).document(itemId).update("buyers", FieldValue.arrayUnion(Firebase.auth.currentUser!!.uid))
     }
 
     fun removeItemFromWishlist(itemId: String) {
         usersRef.document(Firebase.auth.currentUser!!.uid).update("wishlist", FieldValue.arrayRemove(itemId))
+        db.collection(ITEMS_COLLECTION).document(itemId).update("buyers", FieldValue.arrayRemove(Firebase.auth.currentUser!!.uid))
     }
 
 }

@@ -88,25 +88,4 @@ class FilterDialogFragment(private val myContract: MyContract) : DialogFragment(
         super.onDestroyView()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("minValue", textMin.text.toString())
-        outState.putString("maxValue", textMax.text.toString())
-        outState.putString("category", searchDialogLocationEditText.editText?.text.toString())
-        outState.putString("location", searchDialogCategory.editText?.text.toString())
-    }
-
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState != null) {
-            textMin.text = savedInstanceState.get("minValue").toString()
-            textMax.text = savedInstanceState.get("maxValue").toString()
-            searchDialogCategory.editText?.setText(savedInstanceState.get("category").toString())
-            searchDialogLocationEditText.editText?.setText(
-                savedInstanceState.get("location").toString()
-            )
-        }
-    }
-
 }

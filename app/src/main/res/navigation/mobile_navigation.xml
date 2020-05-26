@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_nav_item_details_to_nav_item_list"
             app:destination="@id/nav_own_items" />
+        <action
+            android:id="@+id/action_nav_show_buyer_profile"
+            app:destination="@id/nav_profile" />
     </fragment>
     <fragment
         android:id="@+id/nav_item_edit"

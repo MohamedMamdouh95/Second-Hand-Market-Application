@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.lab2.R
 import com.example.lab2.model.Item
+import com.example.lab2.model.Profile
 import com.example.lab2.model.fbDocumentWithImage
 import com.google.firebase.auth.ktx.auth
 
@@ -155,6 +156,44 @@ class ItemRepository {
             returnedItems.value = allItems
         }
         return returnedItems
+    }
+
+    fun getItemBuyers(itemId: String?): MutableLiveData<List<Profile>> {
+        val buyersLiveData = MutableLiveData<List<Profile>>()
+        itemId?.let {
+            itemsRef.document(it).addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d(TAG, "Current data: ${snapshot.data}")
+
+                    val item = snapshot.toObject(Item::class.java)
+
+                    db.collection(USERS_COLLECTION).addSnapshotListener { value ,e->
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e)
+                            return@addSnapshotListener
+                        }
+                        val buyers = ArrayList<Profile>()
+                        for (user in value!!) {
+                            val userObj = user.toObject(Profile::class.java)
+                            if(item!!.buyers.contains(userObj.documentId)) {
+                                buyers.add(userObj)
+                            }
+                        }
+                        buyersLiveData.value = buyers
+                    }
+
+                } else {
+                    Log.d(TAG, "Current data: null")
+                }
+
+            }
+        }
+        return buyersLiveData
     }
 
 }

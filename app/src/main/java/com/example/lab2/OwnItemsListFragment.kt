@@ -54,7 +54,7 @@ class OwnItemsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.action_nav_own_items_to_nav_on_sale_items2)
         }
         vm.ownItems.observe(viewLifecycleOwner, Observer { items ->

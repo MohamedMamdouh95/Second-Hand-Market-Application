@@ -59,7 +59,7 @@ class ItemEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.action_nav_item_edit_to_nav_on_sale_items)
         }
         val imgButton: ImageButton? = view.rootView.findViewById(R.id.editImageButton)
@@ -218,7 +218,8 @@ class ItemEditFragment : Fragment() {
             title = itemEditTitle.editText?.text.toString(),
             image = vm.detailItem.value?.image,
             documentId = vm.detailItem.value?.documentId,
-            vendorId = Firebase.auth.currentUser?.uid
+            vendorId = Firebase.auth.currentUser?.uid,
+            buyers= vm.detailItem.value!!.buyers
         )
     }
 
