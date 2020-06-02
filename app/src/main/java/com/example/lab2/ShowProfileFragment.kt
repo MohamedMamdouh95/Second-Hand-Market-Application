@@ -52,7 +52,6 @@ class ShowProfileFragment: Fragment() {
         v_model.bitmap.observe(viewLifecycleOwner, Observer { bitmap ->
            profileImage.setImageBitmap(bitmap)
         })
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -64,4 +63,6 @@ class ShowProfileFragment: Fragment() {
             return NavigationUI.onNavDestinationSelected(item,requireView().findNavController())
                     || super.onOptionsItemSelected(item)
     }
+
+
 }

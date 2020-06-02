@@ -101,7 +101,9 @@ class MainActivity : AppCompatActivity() {
                     destination.id == R.id.nav_edit_profile ||
                     destination.id == R.id.nav_profile ||
                     destination.id == R.id.nav_wishlist ||
-                    destination.id == R.id.nav_on_sale_items
+                    destination.id == R.id.nav_on_sale_items||
+                    destination.id == R.id.mapsFragment
+
                 ) {
                     appbar.setExpanded(false, true)
                     drawer_layout.closeDrawer(GravityCompat.START,true)

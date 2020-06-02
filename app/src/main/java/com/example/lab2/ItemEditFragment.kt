@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.InputType
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -23,20 +24,25 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.example.lab2.model.Item
+import com.example.lab2.viewmodel.ItemViewModel
+import com.example.lab2.viewmodel.MapViewModel
+import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.itemeditfragment.*
 import java.util.*
-import com.example.lab2.model.Item
-import com.example.lab2.viewmodel.ItemViewModel
-import androidx.lifecycle.Observer
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.ktx.auth
 
 
 class ItemEditFragment : Fragment() {
-    private val TAG = "ITEM_EDIT_FRAGMENT"
+    private val TAG = ItemEditFragment::class.java.simpleName
     private val vm: ItemViewModel by activityViewModels()
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     companion object {
         private const val REQUEST_TAKE_PHOTO = 0
@@ -62,6 +68,7 @@ class ItemEditFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.action_nav_item_edit_to_nav_on_sale_items)
         }
+
         val imgButton: ImageButton? = view.rootView.findViewById(R.id.editImageButton)
         //Using toolbar for image and editing when in portrait
         imgButton?.let {
@@ -76,11 +83,19 @@ class ItemEditFragment : Fragment() {
             itemEditTitle.editText?.setText(item.title)
             itemEditPrice.editText?.setText(item.price)
             itemEditDescription.editText?.setText(item.description)
-            (itemEditCategory.editText as? AutoCompleteTextView)?.setText(item.category,false)
-            (itemEditSubCategory.editText as? AutoCompleteTextView)?.setText(item.subcategory,false)
+            (itemEditCategory.editText as? AutoCompleteTextView)?.setText(item.category, false)
+            (itemEditSubCategory.editText as? AutoCompleteTextView)?.setText(
+                item.subcategory,
+                false
+            )
             itemEditExpiryDate.editText?.setText(item.expiryDate)
-            itemEditLocation.editText?.setText(item.location)
+            //(itemEditLocation.editText as? AutoCompleteTextView)?.setText(item.location, false)
             vm.setImageStoragePath(item.image)
+        })
+        mapViewModel.locationString.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "Observing the location string")
+            Log.d(TAG, "String value $it")
+            (itemEditLocation.editText as? AutoCompleteTextView)?.setText(it, false)
         })
 
         vm.bitmap.observe(viewLifecycleOwner, Observer { bitmap ->
@@ -101,10 +116,11 @@ class ItemEditFragment : Fragment() {
             }
 
         })
-
         val categories = resources.getStringArray(R.array.Categories)
         val categoriesAdapter =
             ArrayAdapter(requireContext(), R.layout.category_list_item, categories)
+        val locations = arrayOf("Select Location From Map")
+        var locationAdapter = ArrayAdapter(requireContext(), R.layout.category_list_item, locations)
 
         val keyboardHiderListener = View.OnFocusChangeListener { innerView: View?, hasFocus ->
             if (hasFocus) {
@@ -114,10 +130,53 @@ class ItemEditFragment : Fragment() {
             }
         }
 
-        (itemEditCategory.editText as? AutoCompleteTextView)?.onFocusChangeListener =
-            keyboardHiderListener
         (itemEditSubCategory.editText as? AutoCompleteTextView)?.onFocusChangeListener =
             keyboardHiderListener
+        (itemEditLocation.editText as? AutoCompleteTextView)?.onFocusChangeListener =
+            keyboardHiderListener
+
+
+        (itemEditLocation.editText as? AutoCompleteTextView)?.setAdapter(locationAdapter)
+        itemEditLocation.editText?.addTextChangedListener {
+            if (it.toString() == "Select Location From Map") {
+                findNavController().navigate(R.id.action_nav_item_edit_to_mapsFragment)
+                (itemEditLocation.editText as? AutoCompleteTextView)?.setText("", false)
+
+            } else if(it.toString() == ""){
+            } else {
+                //call api
+                val request: FindAutocompletePredictionsRequest =
+                    FindAutocompletePredictionsRequest.builder()
+                        .setQuery(it.toString())
+                        .build()
+                // Initialize the SDK
+                Places.initialize(requireContext(), "")
+                // Create a new Places client instance
+                val placesClient: PlacesClient = Places.createClient(requireContext())
+                placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+                    val suggestedPlaces = ArrayList<String>()
+                    suggestedPlaces.add("Select Location From Map")
+                    for (prediction in response.autocompletePredictions) {
+                        Log.i(TAG, prediction.placeId)
+                        Log.i(TAG, prediction.getPrimaryText(null).toString())
+                        suggestedPlaces.add(prediction.getPrimaryText(null).toString())
+                    }
+                    /*locationAdapter =
+                        ArrayAdapter(requireContext(), R.layout.category_list_item, suggestedPlaces)
+                    (itemEditLocation.editText as? AutoCompleteTextView)?.setAdapter(locationAdapter)*/
+                    locationAdapter.clear()
+                    locationAdapter.addAll(suggestedPlaces)
+                    locationAdapter.notifyDataSetChanged()
+                }.addOnFailureListener { exception ->
+                    if (exception is ApiException) {
+                        val apiException: ApiException = exception as ApiException
+                        Log.e(TAG, "Place not found: " + apiException.statusCode)
+                    }
+                }
+            }
+        }
+
+
 
         (itemEditCategory.editText as? AutoCompleteTextView)?.setAdapter(categoriesAdapter)
         itemEditCategory.editText?.addTextChangedListener {
@@ -138,6 +197,7 @@ class ItemEditFragment : Fragment() {
 
             (itemEditSubCategory.editText as? AutoCompleteTextView)?.setAdapter(subCategoriesAdapter)
         }
+
         itemEditExpiryDate.editText?.inputType = InputType.TYPE_NULL
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
@@ -219,7 +279,7 @@ class ItemEditFragment : Fragment() {
             image = vm.detailItem.value?.image,
             documentId = vm.detailItem.value?.documentId,
             vendorId = Firebase.auth.currentUser?.uid,
-            buyers= vm.detailItem.value!!.buyers
+            buyers = vm.detailItem.value!!.buyers
         )
     }
 

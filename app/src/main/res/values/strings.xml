@@ -44,6 +44,8 @@
     <string name="wishlist">WishList</string>
     <string name="search">Search</string>
     <string name="cancel">Cancel</string>
+    <string name="dropped_pin">Dropped Pin</string>
+    <string name="select">Select</string>
     <string-array name="Categories">
         <item></item>
         <item>Arts &amp; Crafts</item>
