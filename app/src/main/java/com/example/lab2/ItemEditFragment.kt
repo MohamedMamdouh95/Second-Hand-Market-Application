@@ -150,6 +150,7 @@ class ItemEditFragment : Fragment() {
                         .setQuery(it.toString())
                         .build()
                 // Initialize the SDK
+				//I should get the API key from my account on google api for this project
                 Places.initialize(requireContext(), "")
                 // Create a new Places client instance
                 val placesClient: PlacesClient = Places.createClient(requireContext())
