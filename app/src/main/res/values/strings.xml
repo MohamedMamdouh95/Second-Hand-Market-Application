@@ -46,8 +46,8 @@
     <string name="cancel">Cancel</string>
     <string name="dropped_pin">Dropped Pin</string>
     <string name="select">Select</string>
+    <string name="map">Map</string>
     <string-array name="Categories">
-        <item></item>
         <item>Arts &amp; Crafts</item>
         <item>Sports &amp; Hobby</item>
         <item>Baby</item>

@@ -4,14 +4,18 @@ import java.io.Serializable
 import com.google.firebase.firestore.DocumentId
 
 data class Profile(
-    val fullname: String,
-    val nickname: String,
-    val email: String,
-    val location: String,
+    var fullname: String,
+    var nickname: String,
+    var email: String,
+    var location: String,
+    var latitude: Double?,
+    var longitude: Double?,
     override var image: String?,
     @DocumentId override var documentId: String?,
-    val wishlist : ArrayList<String>
-) : Serializable ,fbDocumentWithImage{
-    constructor() : this("", "", "",
-        "", null, null , ArrayList<String>())
+    val wishlist: ArrayList<String>
+) : Serializable, fbDocumentWithImage {
+    constructor() : this(
+        "", "", "",
+        "", null, null, null, null, ArrayList<String>()
+    )
 }

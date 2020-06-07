@@ -1,15 +1,12 @@
 package com.example.lab2
 
-import android.R.attr
-import android.content.Context
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import com.example.lab2.model.Item
 import com.example.lab2.model.Profile
 import com.example.lab2.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -19,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
@@ -30,6 +26,7 @@ class SignInActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
     private lateinit var auth: FirebaseAuth
     private val uservm: UserViewModel by viewModels()
+    private val tag = SignInActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +49,10 @@ class SignInActivity : AppCompatActivity() {
                 .requestEmail()
                 .build()
         // Build a GoogleSignInClient with the options specified by gso.
-        val mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        sign_in_button.setOnClickListener{
+        val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+        sign_in_button.setOnClickListener {
             val signInIntent = mGoogleSignInClient.signInIntent
-            startActivityForResult(signInIntent,RC_SIGN_IN)
+            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
     }
@@ -63,24 +60,24 @@ class SignInActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val currentUser: FirebaseUser? = auth.currentUser
-        //if user is already sign-in go to Mainactivity that manage all fragments
+        //if user is already sign-in go to MainActivity that manage all fragments
         currentUser?.let {
-            Toast.makeText(this,"User already signed in",Toast.LENGTH_LONG).show()
-            val intent = Intent(this,MainActivity::class.java)
+            Toast.makeText(this, "Already signed in", Toast.LENGTH_LONG).show()
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == RC_SIGN_IN){
+        if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
                 firebaseAuthWithGoogle(account.idToken!!)
-            }catch(e: ApiException){
-                Log.d("SIGNIN", e.message)
-                Toast.makeText(this,"SignIn Result failed",Toast.LENGTH_LONG).show()
+            } catch (e: ApiException) {
+                Log.d(tag, e.message.toString())
+                Toast.makeText(this, "Sign in failed", Toast.LENGTH_LONG).show()
             }
 
         }
@@ -93,13 +90,14 @@ class SignInActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     val user = auth.currentUser
-                    val newUser = Profile("Fullname","Nickname",user!!.email!!,"Location","null",
-                        user.uid, ArrayList<String>()
+                    val newUser = Profile(
+                        "Full name", "Nickname", user!!.email!!, "Location", null, null, "null",
+                        user.uid, ArrayList()
                     )
                     uservm.createOrUpdateUser(newUser)
-                    uservm.setUserId(user!!.uid)
-                    Toast.makeText(this,"SigIn OK",Toast.LENGTH_LONG).show()
-                    val intent = Intent(this,MainActivity::class.java)
+                    uservm.setUserId(user.uid)
+                    Toast.makeText(this, "Sign in succeeded", Toast.LENGTH_LONG).show()
+                    val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 } else {
                     // If sign in fails, display a message to the user.

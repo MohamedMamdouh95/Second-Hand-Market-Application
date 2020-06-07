@@ -3,9 +3,8 @@ package com.example.lab2
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
-import androidx.fragment.app.Fragment
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,23 +12,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.lab2.viewmodel.ItemViewModel
 import com.example.lab2.viewmodel.MapViewModel
-
+import com.example.lab2.viewmodel.NavigationSource
+import com.example.lab2.viewmodel.UserViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 
 class MapsFragment : Fragment() {
     private lateinit var map: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val REQUEST_LOCATION_PERMISSION = 1
-    private var latitude: Double? = null
-    private var longitude: Double? = null
+    private var markerLatitude: Double? = null
+    private var markerLongitude: Double? = null
+    private var userLatitude: Double? = null
+    private var userLongitude: Double? = null
+    private val itemViewModel: ItemViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
     private val TAG = MapsFragment::class.java.simpleName
     private val callback = OnMapReadyCallback { googleMap ->
@@ -43,13 +55,19 @@ class MapsFragment : Fragment() {
          * user has installed Google Play services and returned to the app.
          */
         map = googleMap
-        val sydney = LatLng(-34.0, 151.0)
-        val zoomLevel = 17f
-        //googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, zoomLevel))
         enableMyLocation()
-        setMapLongClick(map)
-        setPoiClick(map)
+        if (mapViewModel.navigationSource != NavigationSource.COMING_FROM_ITEM_INFO) {
+            setMapLongClick(map)
+            setPoiClick(map)
+        }
+        markerLatitude = itemViewModel.detailItem.value?.latitude
+        markerLongitude = itemViewModel.detailItem.value?.longitude
+        if (markerLatitude != null && markerLongitude != null) {
+            val position = LatLng(markerLatitude!!, markerLongitude!!)
+            val zoomLevel = 10f
+            googleMap.addMarker(MarkerOptions().position(position).title("Marker on Item Location"))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoomLevel))
+        }
     }
 
     override fun onCreateView(
@@ -57,6 +75,7 @@ class MapsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
@@ -64,8 +83,72 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        setOnSelectClickListener()
-        setCancelOnClickListener()
+        if (mapViewModel.navigationSource == NavigationSource.COMING_FROM_ITEM_INFO) {
+            mapOkButton.visibility = View.GONE
+            mapCancelButton.visibility = View.GONE
+        } else {
+            setOnSelectClickListener()
+            setCancelOnClickListener()
+        }
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener {
+                val userPosition = LatLng(it.latitude, it.longitude)
+                userLatitude = it.latitude
+                userLongitude = it.longitude
+                val zoomLevel = 15f
+                //Adding marker at the user position
+                map.addMarker(
+                    MarkerOptions().position(userPosition)
+                        .title("My Location")
+                )
+                if (mapViewModel.navigationSource == NavigationSource.COMING_FROM_EDIT_USER) {
+                    //Move camera to user position
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(userPosition, zoomLevel))
+                }
+
+                if (mapViewModel.navigationSource == NavigationSource.COMING_FROM_ITEM_INFO) {
+                    //Moving camera to item location
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatitude?.let { it1 ->
+                        markerLongitude?.let { it2 ->
+                            LatLng(
+                                it1, it2
+                            )
+                        }
+                    }, zoomLevel))
+                    //Draw line between item and user current location
+                    val line: Polyline = map.addPolyline(
+                        PolylineOptions()
+                            .add(
+                                markerLongitude?.let { it1 ->
+                                    markerLatitude?.let { it2 ->
+                                        LatLng(
+                                            it2,
+                                            it1
+                                        )
+                                    }
+                                },
+                                LatLng(it.latitude, it.longitude)
+                            )
+                            .width(7f)
+                            .color(Color.BLACK)
+                    )
+                }
+            }
     }
 
     private fun isPermissionGranted(): Boolean {
@@ -111,9 +194,12 @@ class MapsFragment : Fragment() {
                 latLng.latitude,
                 latLng.longitude
             )
-            latitude = latLng.latitude
-            longitude = latLng.longitude
-
+            markerLatitude = latLng.latitude
+            markerLongitude = latLng.longitude
+            if (mapViewModel.navigationSource == NavigationSource.COMING_FROM_EDIT_USER) {
+                userLatitude = latLng.latitude
+                userLongitude = latLng.longitude
+            }
             map.clear()
             map.addMarker(
                 MarkerOptions()
@@ -122,6 +208,7 @@ class MapsFragment : Fragment() {
 
             )
         }
+        Log.d(TAG, "The selected longitude $markerLongitude and latitude $markerLatitude")
     }
 
     private fun setPoiClick(map: GoogleMap) {
@@ -137,16 +224,47 @@ class MapsFragment : Fragment() {
 
     private fun setOnSelectClickListener() {
         mapOkButton.setOnClickListener {
-            if (longitude != null && latitude != null) {
-                mapViewModel.latitude.value = latitude.toString()
-                mapViewModel.longitude.value = longitude.toString()
-                val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
-                val locationString:String = addresses[0].getAddressLine(0)
-                mapViewModel.locationString.value = locationString
-                Log.d(TAG,locationString)
+            when (mapViewModel.navigationSource) {
+                NavigationSource.COMING_FROM_ITEM_EDIT -> {
+                    if (markerLongitude != null && markerLatitude != null) {
+                        itemViewModel.itemUnderEdit?.latitude = markerLatitude
+                        itemViewModel.itemUnderEdit?.longitude = markerLongitude
+                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                        val addresses =
+                            geocoder.getFromLocation(markerLatitude!!, markerLongitude!!, 1)
+                        val locationString: String = addresses[0].getAddressLine(0)
+                        itemViewModel.itemUnderEdit?.location = locationString
+                        Log.d(TAG, locationString)
+                        Log.d(
+                            TAG,
+                            "The Saved longitude $markerLongitude and latitude $markerLatitude"
+                        )
+                    }
+                    findNavController().navigate(R.id.action_mapsFragment_to_nav_item_edit)
+                }
+                NavigationSource.COMING_FROM_EDIT_USER -> {
+                    //Handle what should be returned to the user here.
+                    if (userLatitude != null && userLatitude != null) {
+                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                        val addresses =
+                            geocoder.getFromLocation(userLatitude!!, userLongitude!!, 1)
+                        val locationString: String = addresses[0].getAddressLine(0)
+                        userViewModel.profileUnderEdit?.location = locationString
+                        userViewModel.profileUnderEdit?.latitude = userLatitude
+                        userViewModel.profileUnderEdit?.longitude = userLongitude
+                        Log.d(TAG, locationString)
+                        Log.d(
+                            TAG,
+                            "The Saved longitude $userLatitude and latitude $userLongitude"
+                        )
+                        findNavController().navigate(R.id.action_mapsFragment_to_nav_edit_profile)
+                    }
+                }
+                else -> {
+                    //No case yet here
+                }
             }
-            findNavController().navigate(R.id.action_mapsFragment_to_nav_item_edit)
+
         }
 
     }

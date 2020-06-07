@@ -13,20 +13,20 @@ import com.example.lab2.model.Profile
 import com.example.lab2.model.repository.DocumentWriteResult
 import com.example.lab2.model.repository.UserRepository
 
-class UserViewModel: ViewModel() {
+class UserViewModel : ViewModel() {
 
     private val repository = UserRepository()
     private val imageStoragePathLiveData = MutableLiveData<String?>()
     private val userIdLiveData = MutableLiveData<String>()
     val newImageBitmap = MutableLiveData<Bitmap>()
+    var profileUnderEdit: Profile? = null
+    val bitmap: LiveData<Bitmap> =
+        Transformations.switchMap(imageStoragePathLiveData) { imageStoragePath ->
+            repository.getUserImageAsBitmap(imageStoragePath)
+        }
+    val wishlist: LiveData<List<Item>> by lazy { repository.getWishlist() }
 
-    val bitmap: LiveData<Bitmap> = Transformations.switchMap(imageStoragePathLiveData) { imageStoragePath ->
-        repository.getUserImageAsBitmap(imageStoragePath)
-    }
-    val wishlist : LiveData<List<Item>> by lazy { repository.getWishlist() }
-
-    val detailUser: LiveData<Profile> = Transformations.switchMap(userIdLiveData) {
-            userId ->
+    val detailUser: LiveData<Profile> = Transformations.switchMap(userIdLiveData) { userId ->
         repository.getUser(userId)
     }
 
@@ -35,24 +35,24 @@ class UserViewModel: ViewModel() {
     }
 
     fun setUserId(userId: String?) {
-        userId?.let {  userIdLiveData.value = it }
+        userId?.let { userIdLiveData.value = it }
     }
 
-    fun getUser(userId: String): LiveData<Profile>?{
+    fun getUser(userId: String): LiveData<Profile>? {
         return repository.getUser(userId)
     }
 
-    fun createOrUpdateUser(profile: Profile){
-        repository.createOrUpdateUser(profile).addOnFailureListener{
+    fun createOrUpdateUser(profile: Profile) {
+        repository.createOrUpdateUser(profile).addOnFailureListener {
             Log.e(TAG, "Creazione utente fallita")
         }
     }
 
-    fun createUser(user: Profile, bm: Bitmap?) : LiveData<DocumentWriteResult> {
+    fun createUser(user: Profile, bm: Bitmap?): LiveData<DocumentWriteResult> {
         return repository.createUser(user, bm)
     }
 
-    fun updateUser(user: Profile, bm: Bitmap?) : LiveData<DocumentWriteResult> {
+    fun updateUser(user: Profile, bm: Bitmap?): LiveData<DocumentWriteResult> {
         return repository.updateUser(user, bm)
     }
 

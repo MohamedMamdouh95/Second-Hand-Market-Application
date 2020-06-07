@@ -11,10 +11,26 @@ data class Item(
     var expiryDate: String,
     var price: String,
     var description: String,
+    var latitude: Double?,
+    var longitude: Double?,
     override var image: String?,
     var vendorId: String?,
     @DocumentId override var documentId: String?,
     var buyers: ArrayList<String>
 ) : Serializable, fbDocumentWithImage {
-    constructor() : this("", "", "", "", "", "", "", null, "", null, ArrayList<String>())
+    constructor() : this(
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        null,
+        null,
+        null,
+        "",
+        null,
+        ArrayList<String>()
+    )
 }

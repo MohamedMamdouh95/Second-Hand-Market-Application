@@ -2,30 +2,30 @@ package com.example.lab2
 
 import android.content.Context
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
-
-import androidx.navigation.findNavController
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-
-import androidx.navigation.ui.*
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.lab2.viewmodel.UserViewModel
+import com.google.android.libraries.places.api.Places
 import com.google.android.material.appbar.AppBarLayout
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
-import com.example.lab2.model.repository.ImageRepository
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-
+        Places.initialize(applicationContext, "")
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -101,12 +101,12 @@ class MainActivity : AppCompatActivity() {
                     destination.id == R.id.nav_edit_profile ||
                     destination.id == R.id.nav_profile ||
                     destination.id == R.id.nav_wishlist ||
-                    destination.id == R.id.nav_on_sale_items||
+                    destination.id == R.id.nav_on_sale_items ||
                     destination.id == R.id.mapsFragment
 
                 ) {
                     appbar.setExpanded(false, true)
-                    drawer_layout.closeDrawer(GravityCompat.START,true)
+                    drawer_layout.closeDrawer(GravityCompat.START, true)
                     behaviour.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
                         override fun canDrag(appBarLayout: AppBarLayout): Boolean {
                             return false
@@ -123,8 +123,9 @@ class MainActivity : AppCompatActivity() {
 
                     params.height = heightDp;
 
-                    if(destination.id == R.id.nav_item_edit ||
-                        destination.id == R.id.nav_edit_profile) {
+                    if (destination.id == R.id.nav_item_edit ||
+                        destination.id == R.id.nav_edit_profile
+                    ) {
                         editImageButton.visibility = View.VISIBLE
                     }
                 }

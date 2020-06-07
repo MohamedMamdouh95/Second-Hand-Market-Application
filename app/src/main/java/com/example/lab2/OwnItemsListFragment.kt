@@ -75,6 +75,7 @@ class OwnItemsListFragment : Fragment() {
         fab.setOnClickListener { _ ->
             itemVm.setItemId(null)
             itemVm.setImageStoragePath(null)
+            itemVm.itemUnderEdit = null
             navController.navigate(R.id.nav_item_edit)
         }
 

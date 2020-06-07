@@ -58,6 +58,7 @@ class ItemListViewAdapter(
         holder.imageButton.setOnClickListener {
             itemVm.setItemId(cardItemData.documentId)
             itemVm.setImageStoragePath(cardItemData.image)
+            itemVm.itemUnderEdit = null
             it.findNavController().navigate(R.id.nav_item_edit)
         }
     }

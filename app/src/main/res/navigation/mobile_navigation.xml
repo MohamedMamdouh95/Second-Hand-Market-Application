@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_nav_item_details_to_nav_on_sale_items"
             app:destination="@id/nav_on_sale_items" />
+        <action
+            android:id="@+id/action_nav_item_details_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_item_edit"
@@ -75,6 +78,9 @@
         <action
             android:id="@+id/action_nav_edit_profile_to_nav_profile"
             app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_nav_edit_profile_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
         <action
             android:id="@+id/action_itemEditFragment_to_itemListFragment"
@@ -108,5 +114,8 @@
         <action
             android:id="@+id/action_mapsFragment_to_nav_item_edit"
             app:destination="@id/nav_item_edit" />
+        <action
+            android:id="@+id/action_mapsFragment_to_nav_edit_profile"
+            app:destination="@id/nav_edit_profile" />
     </fragment>
 </navigation>

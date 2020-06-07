@@ -103,7 +103,6 @@ class ItemRepository {
                 val items = ArrayList<Item>()
                 for (document in value!!) {
                     val item = document.toObject(Item::class.java)
-                    item.documentId = document.id
                     items.add(item)
                 }
                 itemListData.value = items

@@ -71,7 +71,10 @@ class ItemDetailsFragment : Fragment() {
         when (item.itemId) {
             R.id.homeAsUp -> findNavController().navigate(R.id.action_nav_item_details_to_nav_item_list)
 
-            R.id.nav_item_edit -> findNavController().navigate(R.id.action_itemDetailsFragment_to_itemEditFragment2)
+            R.id.nav_item_edit -> {
+                itemVm.itemUnderEdit = null
+                findNavController().navigate(R.id.action_itemDetailsFragment_to_itemEditFragment2)
+            }
             //Handling wishlist button clicks for horizontal layout
             R.id.wishlist_option -> itemVm.detailItem.value?.documentId?.let {
                 if (itemOnWishList) {

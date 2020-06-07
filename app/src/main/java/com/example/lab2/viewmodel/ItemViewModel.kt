@@ -12,16 +12,18 @@ import com.example.lab2.model.repository.ItemRepository
 
 class ItemViewModel : ViewModel() {
     private val repository = ItemRepository()
-
-
     private val itemIdLiveData = MutableLiveData<String?>()
+
+
+    var itemUnderEdit: Item? = null
 
     val detailItem: LiveData<Item> = Transformations.switchMap(itemIdLiveData) { itemId ->
         repository.getItem(itemId)
     }
-    val interestedBuyers: LiveData<List<Profile>> = Transformations.switchMap(itemIdLiveData) { itemId ->
-        repository.getItemBuyers(itemId)
-    }
+    val interestedBuyers: LiveData<List<Profile>> =
+        Transformations.switchMap(itemIdLiveData) { itemId ->
+            repository.getItemBuyers(itemId)
+        }
 
     private val imageStoragePathLiveData = MutableLiveData<String?>()
 
@@ -32,6 +34,9 @@ class ItemViewModel : ViewModel() {
 
     val newImageBitmap = MutableLiveData<Bitmap>()
 
+    fun getItemId(): LiveData<String?> {
+        return itemIdLiveData
+    }
 
     fun setImageStoragePath(path: String?) {
         imageStoragePathLiveData.value = path
@@ -48,4 +53,8 @@ class ItemViewModel : ViewModel() {
     fun updateItem(item: Item, bm: Bitmap?): LiveData<DocumentWriteResult> {
         return repository.updateItem(item, bm)
     }
+}
+
+enum class NavigationSource {
+    COMING_FROM_ITEM_EDIT, COMING_FROM_ITEM_INFO,COMING_FROM_EDIT_USER
 }

@@ -26,7 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.onsalelistfragment.*
 
-class OnSaleListFragment : Fragment(),MyContract {
+class OnSaleListFragment : Fragment(), MyContract {
     private val itemListVm: ItemListViewModel by viewModels()
     private val itemVm: ItemViewModel by activityViewModels()
     private val TAG = "ON_SALE_FRAGMENT"
@@ -103,12 +103,12 @@ class OnSaleListFragment : Fragment(),MyContract {
             onSaleFab.setOnClickListener {
                 itemVm.setItemId(null)
                 itemVm.setImageStoragePath(null)
+                itemVm.itemUnderEdit = null
                 navController.navigate(R.id.nav_item_edit)
             }
         }
 
     }
-
 
 
     override fun searchCriteria(minValue: Int, maxValue: Int, location: String, category: String) {

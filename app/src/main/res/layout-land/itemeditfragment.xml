@@ -55,7 +55,6 @@
             app:layout_constraintHorizontal_chainStyle="spread">
 
             <AutoCompleteTextView
-                android:id="@+id/itemEditCategoryAutoCompleteTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -74,7 +73,6 @@
             app:layout_constraintTop_toBottomOf="@+id/itemEditTitle">
 
             <AutoCompleteTextView
-                android:id="@+id/itemEditSubCategoryAutoCompleteTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -131,9 +129,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:hint="@string/location_hint"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mapButton"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/itemEditPrice">
 
@@ -145,6 +143,17 @@
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mapButton"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/map"
+            app:icon="@drawable/ic_add_location_black_18dp"
+            app:layout_constraintBottom_toBottomOf="@+id/itemEditLocation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/itemEditLocation" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemEditDescription"
