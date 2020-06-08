@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlin.math.round
 
 class UserRepository {
 
@@ -67,7 +68,7 @@ class UserRepository {
                     for (item in value!!) {
                         val i = item.toObject(Item::class.java)
                         for (id in itemsIds) {
-                            if (i.documentId == id)
+                            if (i.documentId == id && i.blocked == false)
                                 itemsForWishlist.add(i)
                         }
                     }
@@ -77,6 +78,40 @@ class UserRepository {
             }
         }
         return returnedWishlist
+    }
+
+    fun getBoughtList():MutableLiveData<List<Item>> {
+        val returnedBoughtList = MutableLiveData<List<Item>>()
+        val ref1 = usersRef.document(Firebase.auth.currentUser!!.uid)
+        ref1.addSnapshotListener{ snapshot ,e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                val userDocument = snapshot.toObject(Profile::class.java)
+                val buyedIds = userDocument!!.boughtItems
+                val ref2 = db.collection(ITEMS_COLLECTION)
+                ref2.addSnapshotListener { value , e ->
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e)
+                        return@addSnapshotListener
+                    }
+
+                    val itemsForBoughtList = ArrayList<Item>()
+                    for (item in value!!) {
+                        val i = item.toObject(Item::class.java)
+                        for (id in buyedIds) {
+                            if (i.documentId == id)
+                                itemsForBoughtList.add(i)
+                        }
+                    }
+                    returnedBoughtList.value = itemsForBoughtList
+
+                }
+            }
+        }
+        return returnedBoughtList
     }
 
     fun getUserImageAsBitmap(path:String?): LiveData<Bitmap> {
@@ -123,6 +158,37 @@ class UserRepository {
     fun removeItemFromWishlist(itemId: String) {
         usersRef.document(Firebase.auth.currentUser!!.uid).update("wishlist", FieldValue.arrayRemove(itemId))
         db.collection(ITEMS_COLLECTION).document(itemId).update("buyers", FieldValue.arrayRemove(Firebase.auth.currentUser!!.uid))
+    }
+
+    fun addItemToBoughtList(userId: String, itemId: String) {
+        usersRef.document(userId).update("boughtItems", FieldValue.arrayUnion(itemId))
+    }
+
+    fun updateNumberOfRewiews(userId: String) {
+        usersRef.document(userId).update("numberOfRewiews", FieldValue.increment(1))
+        usersRef.document(userId).get().addOnSuccessListener { document ->
+            if (document != null) {
+                val userDocument = document.toObject(Profile::class.java)
+                val n = userDocument!!.numberOfRewiews
+                Log.d("MYREWIEWS", "Update number , now : $n")
+            }
+        }
+    }
+
+    fun updateRating(userId: String, rating : Float){
+        usersRef.document(userId).get().addOnSuccessListener { document ->
+            if(document != null){
+                val userDocument = document.toObject(Profile::class.java)
+                val oldRating = userDocument!!.rating
+                Log.d("MYREWIEWS", "Old rating : $oldRating")
+                val n = userDocument!!.numberOfRewiews
+                Log.d("MYREWIEWS", "Number of rewiews : $n")
+                var newRating = oldRating + ((rating - oldRating)/n)
+                newRating = round(newRating*10/10)
+                Log.d("MYREWIEWS", "NewRating: $newRating")
+                usersRef.document(userId).update("rating", newRating)
+            }
+        }
     }
 
 }

@@ -147,7 +147,7 @@ class ItemRepository {
             val allItems = ArrayList<Item>()
             for (document in value!!) {
                 val item = document.toObject(Item::class.java)
-                if (item.vendorId != userId) {
+                if (item.vendorId != userId && item.blocked == false) {
                     Log.d(TAG, item.toString())
                     allItems.add(item)
                 }

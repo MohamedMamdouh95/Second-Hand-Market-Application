@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 

@@ -17,7 +17,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.33" />
-
+        <Switch
+            android:id="@+id/unlistSwitch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/unlistSwitchLabel"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent" />
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/itemEditTitle"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -30,7 +40,7 @@
             app:counterMaxLength="100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/unlistSwitch">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/itemEditTitleTextInputEditText"

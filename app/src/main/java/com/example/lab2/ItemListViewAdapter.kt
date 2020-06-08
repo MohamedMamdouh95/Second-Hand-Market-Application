@@ -1,9 +1,12 @@
 package com.example.lab2
 
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -11,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.lab2.model.Item
 import com.example.lab2.viewmodel.ItemListViewModel
 import com.example.lab2.viewmodel.ItemViewModel
+import com.example.lab2.viewmodel.UserViewModel
 
 
 data class CardData(val title: String, var price: String, val image: String?)
@@ -19,9 +23,11 @@ class ItemListViewAdapter(
     private val data: MutableList<Item>,
     private val view: View,
     private val itemVm: ItemViewModel,
+    private val userVm: UserViewModel,
     private val listVm: ItemListViewModel,
     private val lifeCycleOwner: LifecycleOwner,
-    private val isOwnItems: Boolean
+    private val isOwnItems: Boolean,
+    private val isBought : Boolean
 ) : RecyclerView.Adapter<ItemListViewAdapter.ItemListViewHolder>(), Filterable {
     private val dataFullList = ArrayList<Item>(data)
     override fun getItemCount(): Int {
@@ -40,6 +46,12 @@ class ItemListViewAdapter(
             editButton.visibility = View.GONE
         }
 
+        if (isBought){
+            val ratingButton = v.findViewById<Button>(R.id.ratingButton)
+            ratingButton.visibility = View.VISIBLE
+        }
+
+
         return ItemListViewHolder(v, listVm, lifeCycleOwner)
     }
 
@@ -50,17 +62,39 @@ class ItemListViewAdapter(
 
         holder.bind(cardDetails)
 
+        if(cardItemData.rated)
+            holder.ratingButton.visibility = View.GONE
+
         holder.image.setOnClickListener {
             itemVm.setItemId(cardItemData.documentId)
             itemVm.setImageStoragePath(cardItemData.image)
-            it.findNavController().navigate(R.id.nav_item_details)
+
+            if(isBought) {
+                val bundle = bundleOf("bought" to isBought)
+                it.findNavController().navigate(R.id.nav_item_details,bundle)
+            }else {
+
+                it.findNavController().navigate(R.id.nav_item_details)
+            }
         }
         holder.imageButton.setOnClickListener {
             itemVm.setItemId(cardItemData.documentId)
             itemVm.setImageStoragePath(cardItemData.image)
             itemVm.itemUnderEdit = null
+            itemVm.newImageBitmap.value = null
             it.findNavController().navigate(R.id.nav_item_edit)
         }
+        val ratedId = cardItemData.vendorId
+        holder.ratingButton.setOnClickListener {
+            Log.d("RATE", "$ratedId")
+            cardItemData.rated = true
+            it.visibility = View.GONE
+            userVm.setUserId(cardItemData.vendorId)
+            userVm.setImageStoragePath(userVm.getUser(cardItemData.vendorId!!)?.value?.image)
+            val bundle = bundleOf("ratingId" to cardItemData.vendorId)
+            it.findNavController().navigate(R.id.nav_rate_user,bundle)
+        }
+
     }
 
     class ItemListViewHolder(
@@ -72,6 +106,7 @@ class ItemListViewAdapter(
         val price: TextView = v.findViewById(R.id.card_price)
         val image: ImageView = v.findViewById(R.id.cardImageView)
         val imageButton: ImageButton = v.findViewById(R.id.editCard)
+        val ratingButton : Button = v.findViewById(R.id.ratingButton)
 
         fun bind(cardDetails: CardData) {
             title.text = cardDetails.title
@@ -84,8 +119,9 @@ class ItemListViewAdapter(
                     image.setImageBitmap(bitmap)
                 })
             }
-
         }
+
+
     }
 
     //Create object that extends the Filter abstract class

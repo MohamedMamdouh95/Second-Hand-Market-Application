@@ -25,6 +25,7 @@ class UserViewModel : ViewModel() {
             repository.getUserImageAsBitmap(imageStoragePath)
         }
     val wishlist: LiveData<List<Item>> by lazy { repository.getWishlist() }
+    val boughtList : LiveData<List<Item>> by lazy { repository.getBoughtList() }
 
     val detailUser: LiveData<Profile> = Transformations.switchMap(userIdLiveData) { userId ->
         repository.getUser(userId)
@@ -32,6 +33,16 @@ class UserViewModel : ViewModel() {
 
     fun setImageStoragePath(path: String?) {
         imageStoragePathLiveData.value = path
+    }
+
+    private val ownImageStoragePathLiveData = MutableLiveData<String?>()
+
+    val ownBitmap: LiveData<Bitmap> =
+        Transformations.switchMap(ownImageStoragePathLiveData) { imageStoragePath ->
+            repository.getUserImageAsBitmap(imageStoragePath)
+        }
+    fun setOwnImageStoragePath(path: String?) {
+        ownImageStoragePathLiveData.value = path
     }
 
     fun setUserId(userId: String?) {
@@ -62,6 +73,18 @@ class UserViewModel : ViewModel() {
 
     fun removeItemFromWishlist(itemId: String) {
         repository.removeItemFromWishlist(itemId)
+    }
+
+    fun addItemToBoughtList(userId: String, itemId: String) {
+        repository.addItemToBoughtList(userId, itemId)
+    }
+
+    fun updateRating(userId: String, rating: Float){
+        repository.updateRating(userId,rating)
+    }
+
+    fun updateNumberOfRewiews(userId: String){
+        repository.updateNumberOfRewiews(userId)
     }
 
 }

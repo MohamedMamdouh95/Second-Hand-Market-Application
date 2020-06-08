@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lab2.viewmodel.ItemListViewModel
 import com.example.lab2.viewmodel.ItemViewModel
 import com.example.lab2.viewmodel.UserViewModel
-import kotlinx.android.synthetic.main.wishlistfragment.*
+import kotlinx.android.synthetic.main.boughtitemslistfragment.*
 
-class WishlistFragment : Fragment() {
+class BoughtItemsListFragment : Fragment() {
     private val userVm: UserViewModel by activityViewModels()
     private val itemVm: ItemViewModel by activityViewModels()
     private val itemListVm: ItemListViewModel by viewModels()
@@ -24,14 +24,14 @@ class WishlistFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.wishlistfragment, container, false)
+        return inflater.inflate(R.layout.boughtitemslistfragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userVm.wishlist.observe(viewLifecycleOwner, Observer { items ->
-            wishlistRecyclerViewId.adapter =
+        userVm.boughtList.observe(viewLifecycleOwner, Observer { items ->
+            boughtlistRecyclerViewId.adapter =
                 ItemListViewAdapter(
                     items.toMutableList(),
                     view,
@@ -40,12 +40,12 @@ class WishlistFragment : Fragment() {
                     itemListVm,
                     viewLifecycleOwner,
                     isOwnItems = false,
-                    isBought = false
+                    isBought = true
                 )
         })
 
-        wishlistRecyclerViewId.layoutManager = LinearLayoutManager(this.context)
-        wishlistRecyclerViewId.isNestedScrollingEnabled = false
+        boughtlistRecyclerViewId.layoutManager = LinearLayoutManager(this.context)
+        boughtlistRecyclerViewId.isNestedScrollingEnabled = false
 
     }
 }

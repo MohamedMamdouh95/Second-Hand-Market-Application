@@ -14,8 +14,9 @@ import android.provider.Settings
 import android.text.Editable
 import android.util.Log
 import android.view.*
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -61,18 +62,21 @@ class EditProfileFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
         val v: View = inflater.inflate(R.layout.edit_profile_fragment, container, false)
-        registerForContextMenu(v.findViewById(R.id.editProfileImageButton))
-        userVm.setUserId(userId)
         return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            val navController = findNavController()
-            if (navController.currentDestination?.id == R.id.nav_edit_profile) {
-                navController.navigate(R.id.action_nav_edit_profile_to_nav_profile)
-            }
+
+
+        val imgButton: ImageButton? = view.rootView.findViewById(R.id.editImageButton)
+        //Using toolbar for image and editing when in portrait
+        imgButton?.let {
+            registerForContextMenu(it)
+        }
+        //Using different button for image and editing when in landscape
+        editProfileImageButton?.let {
+            registerForContextMenu(it)
         }
         if (userVm.profileUnderEdit == null) {
             userVm.detailUser.observe(viewLifecycleOwner, Observer {
@@ -102,9 +106,22 @@ class EditProfileFragment : Fragment() {
             })
         }
 
-
         userVm.bitmap.observe(viewLifecycleOwner, Observer { bitmap ->
-            editProfileImage.setImageBitmap(bitmap)
+            if (userVm.newImageBitmap.value == null) {
+                editProfileImageLandScape?.setImageBitmap(bitmap)
+                val imageViewCollapsing: ImageView? =
+                    view.rootView?.findViewById(R.id.imageViewCollapsing)
+                imageViewCollapsing?.setImageBitmap(bitmap)
+            }
+
+        })
+        userVm.newImageBitmap.observe(viewLifecycleOwner, Observer { bitmap ->
+            bitmap?.let {
+                editProfileImageLandScape?.setImageBitmap(bitmap)
+                val imageViewCollapsing: ImageView? =
+                    view.rootView?.findViewById(R.id.imageViewCollapsing)
+                imageViewCollapsing?.setImageBitmap(bitmap)
+            }
 
         })
 
@@ -135,6 +152,25 @@ class EditProfileFragment : Fragment() {
         }
 
     }
+    override fun onPause() {
+        super.onPause()
+        val imgButton: ImageButton? = view?.rootView?.findViewById(R.id.editImageButton)
+        imgButton?.let {
+            unregisterForContextMenu(it)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val imgButton: ImageButton? = view?.rootView?.findViewById(R.id.editImageButton)
+        imgButton?.let {
+            registerForContextMenu(it)
+        }
+        //Using different button for image and editing when in landscape
+        editProfileImageButton?.let {
+            registerForContextMenu(it)
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -142,17 +178,15 @@ class EditProfileFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.nav_profile) {
+        if (item.itemId == R.id.nav_own_profile) {
             val firebaseWriteResultLiveData = userVm.detailUser.value?.documentId?.let {
                 userVm.updateUser(fillProfile(), userVm.newImageBitmap.value)
             } ?: userVm.createUser(fillProfile(), userVm.newImageBitmap.value)
 
             firebaseWriteResultLiveData.observe(viewLifecycleOwner, Observer {
                 Toast.makeText(requireContext(), it.statusString, Toast.LENGTH_SHORT).show()
-                if (it.hasFailed) {
-                    //findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
-                } else if (it.documentId != null) {
-                    userVm.setUserId(it.documentId)
+                it.documentId?.let { documentId ->
+                    userVm.setUserId(documentId)
                     val navController = findNavController()
                     if (navController.currentDestination?.id == R.id.nav_edit_profile) {
                         navController.navigate(R.id.action_nav_edit_profile_to_nav_profile)
@@ -175,7 +209,10 @@ class EditProfileFragment : Fragment() {
             longitude,
             userVm.detailUser.value!!.image,
             userVm.detailUser.value!!.documentId,
-            userVm.detailUser.value!!.wishlist
+            userVm.detailUser.value!!.wishlist,
+            userVm.detailUser.value!!.boughtItems,
+            userVm.detailUser.value!!.rating,
+            userVm.detailUser.value!!.numberOfRewiews
         )
     }
 
@@ -322,7 +359,10 @@ class EditProfileFragment : Fragment() {
         }
 
         bitmap?.let {
-            editProfileImage.setImageBitmap(bitmap)
+            val collapsingImageView: ImageView? =
+                view?.rootView?.findViewById(R.id.imageViewCollapsing)
+            collapsingImageView?.setImageBitmap(it)
+            editProfileImageLandScape?.setImageBitmap(bitmap)
             userVm.newImageBitmap.value = bitmap
         }
     }

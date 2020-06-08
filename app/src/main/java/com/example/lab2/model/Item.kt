@@ -16,7 +16,9 @@ data class Item(
     override var image: String?,
     var vendorId: String?,
     @DocumentId override var documentId: String?,
-    var buyers: ArrayList<String>
+    var buyers: ArrayList<String>,
+    var blocked : Boolean,
+    var rated : Boolean
 ) : Serializable, fbDocumentWithImage {
     constructor() : this(
         "",
@@ -31,6 +33,8 @@ data class Item(
         null,
         "",
         null,
-        ArrayList<String>()
+        ArrayList<String>(),
+        false,
+        false
     )
 }

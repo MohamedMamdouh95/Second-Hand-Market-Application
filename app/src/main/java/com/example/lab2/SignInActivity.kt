@@ -1,17 +1,22 @@
 package com.example.lab2
 
+import android.Manifest
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.example.lab2.model.Profile
 import com.example.lab2.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -26,6 +31,7 @@ class SignInActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
     private lateinit var auth: FirebaseAuth
     private val uservm: UserViewModel by viewModels()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val tag = SignInActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +60,9 @@ class SignInActivity : AppCompatActivity() {
             val signInIntent = mGoogleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -90,9 +97,8 @@ class SignInActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     val user = auth.currentUser
-                    val newUser = Profile(
-                        "Full name", "Nickname", user!!.email!!, "Location", null, null, "null",
-                        user.uid, ArrayList()
+                    val newUser = Profile("Fullname","Nickname",user!!.email!!,"Location", null, null, null,
+                        user.uid, ArrayList<String>(),ArrayList<String>(), 0.0f,0
                     )
                     uservm.createOrUpdateUser(newUser)
                     uservm.setUserId(user.uid)
@@ -102,7 +108,6 @@ class SignInActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
-
                 }
 
             }

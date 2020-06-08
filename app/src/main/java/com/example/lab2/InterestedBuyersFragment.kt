@@ -15,6 +15,7 @@ import com.example.lab2.viewmodel.ItemViewModel
 import com.example.lab2.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.interested_buyers_fragment.*
 
+
 class InterestedBuyersFragment : Fragment() {
 
     private val userVm: UserViewModel by activityViewModels()
@@ -30,11 +31,14 @@ class InterestedBuyersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        registerForContextMenu(buyersRecycler)
         itemVm.interestedBuyers.observe(viewLifecycleOwner, Observer { buyers ->
             buyersRecycler.adapter = InterestedBuyersAdapter(
                 buyers,
                 view,
-                userVm
+                userVm,
+                itemVm,
+                context
             )
         })
         buyersRecycler.layoutManager = LinearLayoutManager(this.context)

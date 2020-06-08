@@ -18,7 +18,6 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -28,6 +27,10 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lab2.model.Item
 import com.example.lab2.viewmodel.ItemViewModel
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.lab2.viewmodel.MapViewModel
 import com.example.lab2.viewmodel.NavigationSource
 import com.google.android.gms.common.api.Status
@@ -36,6 +39,9 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.messaging.FirebaseMessaging
+import org.json.JSONException
+import org.json.JSONObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.itemeditfragment.*
 import java.util.*
@@ -45,6 +51,7 @@ class ItemEditFragment : Fragment() {
     private val TAG = ItemEditFragment::class.java.simpleName
     private val vm: ItemViewModel by activityViewModels()
     private val mapVm: MapViewModel by activityViewModels()
+    private val serverKey = "AAAAKYDtvwI:APA91bGqu8AJP6twAbj0VpeOeJCKPmiwjwEuphagZV3Np7PpZlSppjcoLQoSSBumcsv6cDggxCDSbxq1UQmDHyZyiV7qKkR4EW4S7WkpRT66QppcKOsfKjDYd7ZZwkJReSH7Sw0m_mec"
 
     private var latitude: Double? = null
     private var longitude: Double? = null
@@ -57,6 +64,11 @@ class ItemEditFragment : Fragment() {
         private const val CAMERA_OPTION = "Take a Photo"
         private const val GALLERY_OPTION = "Choose from Gallery"
         private const val AUTOCOMPLETE_REQUEST_CODE = 5
+        var blockedNotifAlreadySended = false
+    }
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(context)
     }
 
 
@@ -71,8 +83,9 @@ class ItemEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_item_edit_to_nav_on_sale_items)
+
+        itemEditLocationTextInputEditText.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_item_edit_to_mapsFragment)
         }
 
         val imgButton: ImageButton? = view.rootView.findViewById(R.id.editImageButton)
@@ -95,6 +108,7 @@ class ItemEditFragment : Fragment() {
                 updateSubcategoryFieldDropdown(item.category)
                 itemEditExpiryDate.editText?.setText(item.expiryDate)
                 itemEditLocation.editText?.setText(item.location)
+                unlistSwitch.isChecked = item.blocked
                 longitude = item.longitude
                 latitude = item.latitude
                 vm.setImageStoragePath(item.image)
@@ -119,6 +133,7 @@ class ItemEditFragment : Fragment() {
                 latitude = item.latitude
                 longitude = item.longitude
                 vm.setImageStoragePath(item.image)
+                unlistSwitch.isChecked = item.blocked
             }
         }
         vm.bitmap.observe(viewLifecycleOwner, Observer { bitmap ->
@@ -163,10 +178,9 @@ class ItemEditFragment : Fragment() {
                 inputMethodService.hideSoftInputFromWindow(innerView?.windowToken, 0)
             }
         }
-
-        (itemEditSubCategory.editText as? AutoCompleteTextView)?.onFocusChangeListener =
+        (itemEditCategory.editText as? AutoCompleteTextView)?.onFocusChangeListener =
             keyboardHiderListener
-        (itemEditLocation.editText as? AutoCompleteTextView)?.onFocusChangeListener =
+        (itemEditSubCategory.editText as? AutoCompleteTextView)?.onFocusChangeListener =
             keyboardHiderListener
 
         //Add listener for the map button
@@ -223,6 +237,24 @@ class ItemEditFragment : Fragment() {
                 }
 
             }
+
+        unlistSwitch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked){
+                Toast.makeText(context,"Item unlisted",Toast.LENGTH_LONG).show()
+                val topic = "BUYING_" + vm.detailItem.value?.documentId
+                if(!blockedNotifAlreadySended) {
+                    blockedNotifAlreadySended = true
+                    val item = vm.detailItem.value?.title.toString()
+                    sendItemBlockedNotification(item,topic)
+                    Log.d("LAB4_BLOCKING", topic)
+                }
+            }
+            else {
+                Toast.makeText(context,"Item listed", Toast.LENGTH_LONG).show()
+                blockedNotifAlreadySended = false
+            }
+        }
+
     }
 
     fun updateSubcategoryFieldDropdown(category: String) {
@@ -282,7 +314,8 @@ class ItemEditFragment : Fragment() {
                         findNavController().navigate(R.id.action_itemEditFragment_to_itemListFragment)
                     } else if (it.documentId != null) {
                         vm.setItemId(it.documentId)
-                        findNavController().navigate(R.id.action_itemEditFragment_to_itemDetailsFragment)
+                        subscribeSellingItem(it.documentId)
+                        findNavController().navigate(R.id.action_nav_item_edit_to_nav_item_details)
                     }
                 })
             } else {
@@ -307,7 +340,9 @@ class ItemEditFragment : Fragment() {
             vendorId = Firebase.auth.currentUser?.uid,
             buyers = vm.detailItem.value!!.buyers,
             latitude = latitude,
-            longitude = longitude
+            longitude = longitude,
+            blocked = unlistSwitch.isChecked ,
+            rated = vm.detailItem.value!!.rated
         )
     }
 
@@ -475,6 +510,50 @@ class ItemEditFragment : Fragment() {
         itemEditImageButtonLandscape?.let {
             registerForContextMenu(it)
         }
+    }
+
+    private fun subscribeSellingItem(id: String?){
+        val topic : String = "SELLING_$id"
+        FirebaseMessaging.getInstance().subscribeToTopic("/topics/$topic")
+            .addOnCompleteListener { task ->
+                Log.d("LAB_4_SELLING", topic)
+            }
+    }
+
+    private fun sendItemBlockedNotification(item : String, topic : String?){
+        val FCM_API = "https://fcm.googleapis.com/fcm/send"
+        val serverKey =
+            "key=$serverKey"
+        val contentType = "application/json"
+        val notification = JSONObject()
+        val notificationBody = JSONObject()
+        try {
+            notificationBody.put("title", "Item in your wishlist is not more on sale")
+            notificationBody.put("message", "$item is not more on sale !\nDo not despair, the seller could change his mind!")   //Enter your notification message
+            notification.put("to", "/topics/$topic")
+            notification.put("data", notificationBody)
+            Log.e("LAB_4_SEND", "try")
+        } catch (e: JSONException) {
+            Log.e("LAB_4_SEND", "onCreate: " + e.message)
+        }
+
+        Log.e("LAB_4_SEND", "sendNotification")
+        val jsonObjectRequest = object : JsonObjectRequest(FCM_API, notification,
+            Response.Listener { response ->
+                Log.i("LAB_4_SEND", "onResponse: $response")
+            },
+            Response.ErrorListener {
+                Log.i("LAB_4_SEND", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = serverKey
+                params["Content-Type"] = contentType
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
     }
 
 

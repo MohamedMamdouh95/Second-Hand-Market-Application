@@ -8,19 +8,13 @@
     <fragment
         android:id="@+id/nav_item_details"
         android:name="com.example.lab2.ItemDetailsFragment"
-        android:label="" >
+        android:label="">
         <action
             android:id="@+id/action_itemDetailsFragment_to_itemEditFragment2"
             app:destination="@id/nav_item_edit" />
         <action
-            android:id="@+id/action_nav_item_details_to_nav_item_list"
-            app:destination="@id/nav_own_items" />
-        <action
             android:id="@+id/action_nav_show_buyer_profile"
-            app:destination="@id/nav_profile" />
-        <action
-            android:id="@+id/action_nav_item_details_to_nav_on_sale_items"
-            app:destination="@id/nav_on_sale_items" />
+            app:destination="@id/nav_buyer_profile" />
         <action
             android:id="@+id/action_nav_item_details_to_mapsFragment"
             app:destination="@id/mapsFragment" />
@@ -30,87 +24,71 @@
         android:name="com.example.lab2.ItemEditFragment"
         android:label="" >
         <action
-            android:id="@+id/action_itemEditFragment_to_itemDetailsFragment"
-            app:destination="@id/nav_item_details" />
-        <action
-            android:id="@+id/action_nav_item_edit_to_nav_on_sale_items"
-            app:destination="@id/nav_on_sale_items" />
-        <action
             android:id="@+id/action_nav_item_edit_to_nav_item_details"
-            app:destination="@id/nav_item_details" />
+            app:destination="@id/nav_item_details"
+            app:popUpTo="@id/nav_own_items"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_itemEditFragment_to_itemListFragment"
+            app:destination="@id/nav_own_items" />
         <action
             android:id="@+id/action_nav_item_edit_to_mapsFragment"
             app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/nav_profile"
+        android:id="@+id/nav_own_profile"
         android:name="com.example.lab2.ShowProfileFragment"
-        android:label="@string/nav_menu_profile">
+        android:label=" "
+        tools:layout="@layout/show_profile_fragment">
         <action
             android:id="@+id/action_showProfileFragment_to_editProfileFragment"
             app:destination="@id/nav_edit_profile" />
-        <action
-            android:id="@+id/action_nav_profile_to_nav_on_sale_items2"
-            app:destination="@id/nav_on_sale_items" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_own_items"
         android:name="com.example.lab2.OwnItemsListFragment"
-        android:label="@string/nav_menu_own_items_list">
-        <action
-            android:id="@+id/action_itemListFragment_to_itemDetailsFragment"
-            app:destination="@id/nav_item_details"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_itemListFragment_to_itemEditFragment"
-            app:destination="@id/nav_item_edit" />
-        <action
-            android:id="@+id/action_nav_own_items_to_nav_on_sale_items2"
-            app:destination="@id/nav_on_sale_items" />
-    </fragment>
+        android:label="@string/nav_menu_own_items_list"/>
 
     <fragment
         android:id="@+id/nav_edit_profile"
         android:name="com.example.lab2.EditProfileFragment"
-        android:label="" >
+        android:label=" ">
         <action
             android:id="@+id/action_nav_edit_profile_to_nav_profile"
-            app:destination="@id/nav_profile" />
+            app:destination="@id/nav_own_profile"
+            app:popUpTo="@id/nav_own_profile"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_nav_edit_profile_to_mapsFragment"
             app:destination="@id/mapsFragment" />
     </fragment>
-        <action
-            android:id="@+id/action_itemEditFragment_to_itemListFragment"
-            app:destination="@id/nav_own_items" />
     <fragment
         android:id="@+id/nav_on_sale_items"
         android:name="com.example.lab2.OnSaleListFragment"
-        android:label="@string/nav_menu_on_sale_items_list" >
-        <action
-            android:id="@+id/action_nav_on_sale_items_self"
-            app:destination="@id/nav_on_sale_items" />
-    </fragment>
+        android:label="@string/nav_menu_on_sale_items_list" />
 
     <fragment
         android:id="@+id/nav_wishlist"
         android:name="com.example.lab2.WishlistFragment"
         android:label="Wishlist" />
     <fragment
-        android:id="@+id/itemInfoFragment"
-        android:name="com.example.lab2.ItemInfoFragment"
-        android:label="ItemInfoFragment" />
+        android:id="@+id/nav_buyer_profile"
+        android:name="com.example.lab2.ShowProfileFragment"
+        tools:layout="@layout/show_profile_fragment" />
     <fragment
-        android:id="@+id/interestedBuyersFragment"
-        android:name="com.example.lab2.InterestedBuyersFragment"
-        android:label="InterestedBuyersFragment" />
+        android:id="@+id/nav_boughtlist"
+        android:name="com.example.lab2.BoughtItemsListFragment"
+        android:label="Bought Items" />
+    <fragment
+        android:id="@+id/nav_rate_user"
+        android:name="com.example.lab2.ShowProfileFragment"
+        android:label=" "
+        tools:layout="@layout/show_profile_fragment" />
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.example.lab2.MapsFragment"
-        android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" >
+        tools:layout="@layout/fragment_maps">
         <action
             android:id="@+id/action_mapsFragment_to_nav_item_edit"
             app:destination="@id/nav_item_edit" />

@@ -5,39 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/editProfileImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@string/profilepictureContentDescrition"
-        android:scaleType="fitCenter"
-        android:tag="default"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.33"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/profile_pic" />
-
-    <ImageButton
-        android:id="@+id/editProfileImageButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:alpha="0.5"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/profilepictureContentDescrition"
-        android:scaleType="centerInside"
-        android:src="@android:drawable/ic_menu_camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.33"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <EditText
         android:id="@+id/editProfileFullName"
         android:layout_width="wrap_content"
@@ -50,7 +17,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="@dimen/nfont_size"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/editProfileImageButton" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editProfileNickname"

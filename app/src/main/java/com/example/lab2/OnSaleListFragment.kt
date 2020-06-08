@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lab2.model.Item
 import com.example.lab2.viewmodel.ItemListViewModel
 import com.example.lab2.viewmodel.ItemViewModel
+import com.example.lab2.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.onsalelistfragment.*
@@ -29,6 +30,7 @@ import kotlinx.android.synthetic.main.onsalelistfragment.*
 class OnSaleListFragment : Fragment(), MyContract {
     private val itemListVm: ItemListViewModel by viewModels()
     private val itemVm: ItemViewModel by activityViewModels()
+    private val userVm: UserViewModel by activityViewModels()
     private val TAG = "ON_SALE_FRAGMENT"
     private lateinit var itemListViewAdapter: ItemListViewAdapter
     private lateinit var filterDialogFragment: FilterDialogFragment
@@ -79,8 +81,7 @@ class OnSaleListFragment : Fragment(), MyContract {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-        }
+
         val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         val userId = user?.uid
         userId?.let {
@@ -89,9 +90,11 @@ class OnSaleListFragment : Fragment(), MyContract {
                     items.toMutableList(),
                     view,
                     itemVm,
+                    userVm,
                     itemListVm,
                     viewLifecycleOwner,
-                    isOwnItems = false
+                    isOwnItems = false,
+                    isBought = false
                 )
                 onSaleRecyclerViewId.adapter = itemListViewAdapter
 

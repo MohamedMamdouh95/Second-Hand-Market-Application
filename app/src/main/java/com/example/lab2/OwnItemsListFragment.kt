@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lab2.viewmodel.ItemListViewModel
 import com.example.lab2.viewmodel.ItemViewModel
+import com.example.lab2.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.own_items_list_fragment.*
 
 
@@ -20,6 +21,7 @@ class OwnItemsListFragment : Fragment() {
 
     private val vm: ItemListViewModel by viewModels()
     private val itemVm: ItemViewModel by activityViewModels()
+    private val userVm : UserViewModel by activityViewModels()
     private lateinit var itemListViewAdapter: ItemListViewAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,23 +56,23 @@ class OwnItemsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_nav_own_items_to_nav_on_sale_items2)
-        }
         vm.ownItems.observe(viewLifecycleOwner, Observer { items ->
             itemListViewAdapter = ItemListViewAdapter(
                 items.toMutableList(),
                 view,
                 itemVm,
+                userVm,
                 vm,
                 viewLifecycleOwner,
-                isOwnItems = true
+                isOwnItems = true,
+                isBought = false
             )
             recyclerViewId.adapter = itemListViewAdapter
         })
         recyclerViewId.layoutManager = LinearLayoutManager(this.context)
 
         recyclerViewId.isNestedScrollingEnabled = false
+
         val navController = view.findNavController()
         fab.setOnClickListener { _ ->
             itemVm.setItemId(null)

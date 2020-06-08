@@ -45,6 +45,8 @@
     <string name="search">Search</string>
     <string name="cancel">Cancel</string>
     <string name="dropped_pin">Dropped Pin</string>
+    <string name="block_sale">Block Sale</string>
+    <string name="unlistSwitchLabel">Unlisted</string>
     <string name="select">Select</string>
     <string name="map">Map</string>
     <string-array name="Categories">
